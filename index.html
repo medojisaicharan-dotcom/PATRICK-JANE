@@ -410,6 +410,39 @@
     </section>
   </main>
 
+  <!-- ==================== ADMIN APPOINTMENT REVIEW ==================== -->
+  <main id="page-admin" class="page-view" style="display: none;">
+    <section class="section">
+      <div class="container">
+        <div class="admin-page-header">
+          <div>
+            <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Clinic Administration</span>
+            <h1 class="section-title" style="margin-bottom: 0.25rem;">Appointment Review</h1>
+            <p class="section-subtitle">Review patient requests and update appointment status.</p>
+          </div>
+          <button class="btn btn-secondary" onclick="loadAdminAppointments()" aria-label="Refresh appointments">
+            <span aria-hidden="true">&#8635;</span> Refresh
+          </button>
+        </div>
+
+        <div class="admin-filters">
+          <input type="search" id="adminSearch" class="form-control" placeholder="Search patient, email, phone, or booking ID" oninput="renderAdminAppointments()" aria-label="Search appointments">
+          <select id="adminStatusFilter" class="form-control" onchange="renderAdminAppointments()" aria-label="Filter by status">
+            <option value="All">All statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+
+        <div id="adminAppointmentsList" class="appointment-list" aria-live="polite">
+          <div class="form-card"><p>Administrator access is required to view patient appointments.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
   <!-- ==================== 6. ABOUT US ==================== -->
   <main id="page-about" class="page-view" style="display: none;">
     <section class="section">

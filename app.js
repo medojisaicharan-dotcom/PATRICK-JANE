@@ -5,8 +5,10 @@
 // State Management
 let currentUser = null;
 let supabaseClient = null;
+let isAdmin = false;
 
-let appointments = JSON.parse(localStorage.getItem('mindcare_appointments')) || INITIAL_APPOINTMENTS;
+let appointments = [];
+let adminAppointments = [];
 let currentTab = 'upcoming';
 
 // Initialize App on DOM Ready
@@ -80,6 +82,8 @@ function navigateTo(pageId) {
   // Page specific hooks
   if (pageId === 'appointments') {
     renderAppointments();
+  } else if (pageId === 'admin') {
+    loadAdminAppointments();
   } else if (pageId === 'book') {
     autofillBookingPatientInfo();
   }
@@ -287,16 +291,22 @@ function autofillBookingPatientInfo() {
   }
 }
 
-function handleAppointmentSubmit(event) {
+async function handleAppointmentSubmit(event) {
   event.preventDefault();
+
+  if (!currentUser || !supabaseClient) {
+    showToast('Please sign in before booking an appointment.');
+    navigateTo('auth');
+    return;
+  }
 
   const doctorId = document.getElementById('bookDoctorSelect').value;
   const doctor = PSYCHIATRISTS_DATA.find(d => d.id === doctorId);
   const date = document.getElementById('bookDate').value;
   const time = document.getElementById('selectedTimeSlot').value;
-  const name = document.getElementById('patientName').value.trim();
   const phone = document.getElementById('patientPhone').value.trim();
-  const email = document.getElementById('patientEmail').value.trim();
+  const name = currentUser.name || document.getElementById('patientName').value.trim();
+  const email = currentUser.email;
   const reason = document.getElementById('appointmentReason').value.trim() || 'General psychiatric consultation';
   
   const consultTypeRadio = document.querySelector('input[name="consultationType"]:checked');
@@ -312,28 +322,33 @@ function handleAppointmentSubmit(event) {
     return;
   }
 
-  // Generate Booking ID
-  const bookingId = 'APT-' + Math.floor(1000 + Math.random() * 9000);
+  const bookingCode = `APT-${Date.now()}`;
+  const { data, error } = await supabaseClient.from('appointments').insert({
+    booking_code: bookingCode,
+    user_id: currentUser.id,
+    patient_name: name,
+    patient_email: email,
+    patient_phone: phone,
+    doctor_id: doctor.id,
+    doctor_name: doctor.name,
+    doctor_specialty: doctor.specialization,
+    appointment_date: date,
+    appointment_time: time,
+    consultation_type: consultationType,
+    reason,
+    status: 'Pending'
+  }).select().single();
 
-  const newAppointment = {
-    id: bookingId,
-    doctorId: doctor.id,
-    doctorName: doctor.name,
-    doctorSpecialty: doctor.specialization,
-    doctorPhoto: doctor.photo,
-    date: date,
-    time: time,
-    patientName: name,
-    patientEmail: email,
-    patientPhone: phone,
-    consultationType: consultationType,
-    reason: reason,
-    status: 'Upcoming'
-  };
+  if (error) {
+    const tableMissing = error.code === 'PGRST205' || /could not find the table.*public\.appointments/i.test(error.message || '');
+    showToast(tableMissing
+      ? "Appointments table is missing. Run supabase-admin-setup.sql in Supabase SQL Editor. If already run, execute NOTIFY pgrst, 'reload schema'; then refresh this page."
+      : error.message);
+    return;
+  }
 
-  // Prepend to appointments
+  const newAppointment = mapAppointmentRecord(data);
   appointments.unshift(newAppointment);
-  localStorage.setItem('mindcare_appointments', JSON.stringify(appointments));
 
   // Reset form
   event.target.reset();
@@ -348,7 +363,7 @@ function showConfirmationModal(apt) {
   const detailsBox = document.getElementById('confirmationDetails');
   if (detailsBox) {
     detailsBox.innerHTML = `
-      <div><strong>Booking ID:</strong> <span style="color: var(--primary); font-weight: 700;">${apt.id}</span></div>
+      <div><strong>Booking ID:</strong> <span style="color: var(--primary); font-weight: 700;">${escapeHTML(apt.bookingCode || apt.id)}</span></div>
       <div><strong>Psychiatrist:</strong> ${apt.doctorName}</div>
       <div><strong>Specialty:</strong> ${apt.doctorSpecialty}</div>
       <div><strong>Date & Time:</strong> ${apt.date} at ${apt.time}</div>
@@ -383,8 +398,15 @@ function renderAppointments() {
   const container = document.getElementById('appointmentsList');
   if (!container) return;
 
-  const upcoming = appointments.filter(a => a.status === 'Upcoming');
-  const previous = appointments.filter(a => a.status !== 'Upcoming');
+  if (!currentUser) {
+    container.innerHTML = '<div class="form-card"><p>Sign in to view your appointments.</p><button class="btn btn-primary" onclick="navigateTo(\'auth\')">Patient Sign In</button></div>';
+    document.getElementById('upcomingBadgeCount').textContent = '0';
+    document.getElementById('previousBadgeCount').textContent = '0';
+    return;
+  }
+
+  const upcoming = appointments.filter(a => ['Pending', 'Confirmed', 'Upcoming'].includes(a.status));
+  const previous = appointments.filter(a => !['Pending', 'Confirmed', 'Upcoming'].includes(a.status));
 
   document.getElementById('upcomingBadgeCount').textContent = upcoming.length;
   document.getElementById('previousBadgeCount').textContent = previous.length;
@@ -409,35 +431,35 @@ function renderAppointments() {
   container.innerHTML = listToShow.map(apt => `
     <div class="appointment-card">
       <div class="apt-doctor-info">
-        <img src="${apt.doctorPhoto}" alt="${apt.doctorName}" class="apt-avatar">
+        <img src="${escapeHTML(apt.doctorPhoto)}" alt="${escapeHTML(apt.doctorName)}" class="apt-avatar">
         <div class="apt-details">
-          <h4>${apt.doctorName}</h4>
-          <p>${apt.doctorSpecialty}</p>
+          <h4>${escapeHTML(apt.doctorName)}</h4>
+          <p>${escapeHTML(apt.doctorSpecialty)}</p>
           <p style="margin-top: 0.35rem; font-size: 0.8rem; color: var(--slate-500);">
-            <strong>Reason:</strong> ${apt.reason}
+            <strong>Reason:</strong> ${escapeHTML(apt.reason)}
           </p>
         </div>
       </div>
 
       <div class="apt-time-badge">
         <div style="font-weight: 700; color: var(--dark); font-size: 0.95rem;">
-          &#128197; ${apt.date}
+          &#128197; ${escapeHTML(apt.date)}
         </div>
         <div style="color: var(--slate-700); font-size: 0.875rem;">
-          &#9200; ${apt.time}
+          &#9200; ${escapeHTML(apt.time)}
         </div>
         <div style="font-size: 0.8rem; color: var(--slate-500);">
-          ${apt.consultationType}
+          ${escapeHTML(apt.consultationType)}
         </div>
       </div>
 
       <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
-        <span class="badge ${apt.status === 'Upcoming' ? 'badge-primary' : 'badge-secondary'}">
-          ${apt.status}
+        <span class="badge ${['Pending', 'Confirmed', 'Upcoming'].includes(apt.status) ? 'badge-primary' : 'badge-secondary'}">
+          ${escapeHTML(apt.status)}
         </span>
-        <span style="font-size: 0.75rem; color: var(--slate-500);">ID: ${apt.id}</span>
+        <span style="font-size: 0.75rem; color: var(--slate-500);">ID: ${escapeHTML(apt.bookingCode || apt.id)}</span>
         
-        ${apt.status === 'Upcoming' ? `
+        ${['Pending', 'Confirmed', 'Upcoming'].includes(apt.status) ? `
           <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
             <button class="btn btn-sm btn-secondary" onclick="rescheduleAppointment('${apt.id}')">
               Reschedule
@@ -456,15 +478,14 @@ function renderAppointments() {
   `).join('');
 }
 
-function cancelAppointment(id) {
+async function cancelAppointment(id) {
   if (confirm('Are you sure you want to cancel this appointment?')) {
-    appointments = appointments.map(apt => {
-      if (apt.id === id) {
-        return { ...apt, status: 'Cancelled' };
-      }
-      return apt;
-    });
-    localStorage.setItem('mindcare_appointments', JSON.stringify(appointments));
+    const { error } = await supabaseClient.from('appointments').update({ status: 'Cancelled' }).eq('id', id);
+    if (error) {
+      showToast(error.message);
+      return;
+    }
+    appointments = appointments.map(apt => apt.id === id ? { ...apt, status: 'Cancelled' } : apt);
     renderAppointments();
     updateDashboardCounts();
     showToast('Appointment cancelled.');
@@ -477,6 +498,138 @@ function rescheduleAppointment(id) {
     startBookingWithDoctor(apt.doctorId);
     showToast('Select a new date and time for your visit.');
   }
+}
+
+function mapAppointmentRecord(record) {
+  const doctor = PSYCHIATRISTS_DATA.find(item => item.id === record.doctor_id);
+  return {
+    id: record.id,
+    bookingCode: record.booking_code,
+    doctorId: record.doctor_id,
+    doctorName: record.doctor_name,
+    doctorSpecialty: record.doctor_specialty,
+    doctorPhoto: doctor?.photo || '',
+    date: record.appointment_date,
+    time: record.appointment_time,
+    patientName: record.patient_name,
+    patientEmail: record.patient_email,
+    patientPhone: record.patient_phone,
+    consultationType: record.consultation_type,
+    reason: record.reason,
+    status: record.status
+  };
+}
+
+function escapeHTML(value) {
+  const element = document.createElement('span');
+  element.textContent = value ?? '';
+  return element.innerHTML;
+}
+
+async function loadPatientAppointments(userId = currentUser?.id) {
+  if (!userId || !supabaseClient) return;
+  const { data, error } = await supabaseClient
+    .from('appointments')
+    .select('*')
+    .eq('user_id', userId)
+    .order('appointment_date', { ascending: true });
+
+  if (currentUser?.id !== userId) return;
+  if (error) {
+    showToast(error.message);
+    return;
+  }
+
+  appointments = data.map(mapAppointmentRecord);
+  renderAppointments();
+  updateDashboardCounts();
+}
+
+async function loadAdminAppointments() {
+  const container = document.getElementById('adminAppointmentsList');
+  if (!container) return;
+  if (!isAdmin || !supabaseClient) {
+    container.innerHTML = '<div class="form-card"><p>Administrator access is required to view patient appointments.</p></div>';
+    return;
+  }
+
+  container.innerHTML = '<p>Loading appointments...</p>';
+  const { data, error } = await supabaseClient
+    .from('appointments')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    container.textContent = `Unable to load appointments: ${error.message}`;
+    return;
+  }
+
+  adminAppointments = data.map(mapAppointmentRecord);
+  renderAdminAppointments();
+}
+
+function renderAdminAppointments() {
+  const container = document.getElementById('adminAppointmentsList');
+  if (!container) return;
+
+  const statusFilter = document.getElementById('adminStatusFilter')?.value || 'All';
+  const query = (document.getElementById('adminSearch')?.value || '').trim().toLowerCase();
+  const filtered = adminAppointments.filter(apt => {
+    const matchesStatus = statusFilter === 'All' || apt.status === statusFilter;
+    const matchesQuery = !query || [apt.patientName, apt.patientEmail, apt.patientPhone, apt.bookingCode]
+      .some(value => String(value || '').toLowerCase().includes(query));
+    return matchesStatus && matchesQuery;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="form-card"><p>No appointments match this filter.</p></div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(apt => `
+    <article class="appointment-card admin-appointment-card">
+      <div class="apt-details admin-patient-details">
+        <span class="badge badge-secondary">${escapeHTML(apt.bookingCode)}</span>
+        <h3>${escapeHTML(apt.patientName)}</h3>
+        <p><a href="mailto:${encodeURIComponent(apt.patientEmail)}">${escapeHTML(apt.patientEmail)}</a></p>
+        <p><a href="tel:${encodeURIComponent(apt.patientPhone)}">${escapeHTML(apt.patientPhone)}</a></p>
+        <p><strong>Reason:</strong> ${escapeHTML(apt.reason)}</p>
+      </div>
+      <div class="apt-details">
+        <h4>${escapeHTML(apt.doctorName)}</h4>
+        <p>${escapeHTML(apt.doctorSpecialty)}</p>
+        <p>${escapeHTML(apt.date)} at ${escapeHTML(apt.time)}</p>
+        <p>${escapeHTML(apt.consultationType)}</p>
+      </div>
+      <div class="admin-appointment-actions">
+        <span class="badge ${apt.status === 'Confirmed' ? 'badge-success' : apt.status === 'Pending' ? 'badge-primary' : 'badge-secondary'}">${escapeHTML(apt.status)}</span>
+        ${apt.status !== 'Cancelled' && apt.status !== 'Completed' ? `
+          <button class="btn btn-sm btn-primary" onclick="setAppointmentStatus('${apt.id}', 'Confirmed')">Confirm</button>
+          <button class="btn btn-sm btn-danger" onclick="setAppointmentStatus('${apt.id}', 'Cancelled')">Cancel</button>
+        ` : ''}
+      </div>
+    </article>
+  `).join('');
+}
+
+async function setAppointmentStatus(id, status) {
+  if (!isAdmin || !['Confirmed', 'Cancelled'].includes(status)) return;
+  const { error } = await supabaseClient
+    .from('appointments')
+    .update({ status })
+    .eq('id', id);
+
+  if (error) {
+    showToast(error.message);
+    return;
+  }
+
+  adminAppointments = adminAppointments.map(apt => apt.id === id ? { ...apt, status } : apt);
+  appointments = appointments.map(apt => apt.id === id ? { ...apt, status } : apt);
+  renderAdminAppointments();
+  renderAppointments();
+  updateDashboardCounts();
+  showToast(`Appointment ${status.toLowerCase()}.`);
 }
 
 // ==========================================================================
@@ -498,20 +651,47 @@ async function initializeSupabaseAuth() {
     return;
   }
 
-  syncAuthenticatedUser(data.session?.user ?? null);
+  await syncAuthenticatedUser(data.session?.user ?? null);
   supabaseClient.auth.onAuthStateChange((_event, session) => {
-    syncAuthenticatedUser(session?.user ?? null);
+    setTimeout(() => syncAuthenticatedUser(session?.user ?? null), 0);
   });
 }
 
-function syncAuthenticatedUser(user) {
+async function syncAuthenticatedUser(user) {
   currentUser = user ? {
+    id: user.id,
     name: user.user_metadata?.full_name || user.email.split('@')[0],
     email: user.email,
     phone: user.user_metadata?.phone || ''
   } : null;
+
+  if (!currentUser) {
+    isAdmin = false;
+    appointments = [];
+    adminAppointments = [];
+    updateAuthUI();
+    renderAppointments();
+    updateDashboardCounts();
+    return;
+  }
+
+  const userId = currentUser.id;
+  await Promise.all([loadPatientAppointments(userId), loadAdminAccess(userId)]);
+  if (currentUser?.id !== userId) return;
   updateAuthUI();
   if (currentUser) autofillBookingPatientInfo();
+}
+
+async function loadAdminAccess(userId) {
+  const { data, error } = await supabaseClient
+    .from('admin_users')
+    .select('user_id')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (currentUser?.id !== userId) return;
+  isAdmin = !error && !!data;
+  if (error) showToast('Admin access is not configured yet. Run the Supabase setup SQL.');
 }
 
 function switchAuthTab(tab) {
@@ -584,9 +764,10 @@ function updateAuthUI() {
   if (currentUser) {
     if (navContainer) {
       navContainer.innerHTML = `
+        ${isAdmin ? '<button class="btn btn-secondary btn-sm" onclick="navigateTo(\'admin\')">Admin</button>' : ''}
         <button class="btn btn-secondary btn-sm" onclick="navigateTo('auth')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>${currentUser.name.split(' ')[0]}</span>
+          <span>${escapeHTML(currentUser.name.split(' ')[0])}</span>
         </button>
       `;
     }

@@ -601,6 +601,47 @@ button {
   box-shadow: var(--shadow-sm);
 }
 
+.admin-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-filters {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(180px, 240px);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-appointment-card {
+  align-items: flex-start;
+}
+
+.admin-patient-details {
+  flex: 1 1 280px;
+  overflow-wrap: anywhere;
+}
+
+.admin-patient-details h3 {
+  color: var(--dark);
+  font-size: 1.05rem;
+  margin-top: 0.5rem;
+}
+
+.admin-patient-details a {
+  color: var(--primary-hover);
+}
+
+.admin-appointment-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
 .apt-doctor-info {
   display: flex;
   align-items: center;
@@ -907,6 +948,16 @@ button {
   }
   .form-row {
     grid-template-columns: 1fr;
+  }
+  .admin-page-header {
+    align-items: flex-start;
+  }
+  .admin-filters {
+    grid-template-columns: 1fr;
+  }
+  .admin-appointment-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
   .hero-title {
     font-size: 2.2rem;
