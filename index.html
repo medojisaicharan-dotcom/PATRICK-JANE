@@ -310,37 +310,30 @@
           <form id="loginForm" onsubmit="handleLoginSubmit(event)">
             <div class="form-group">
               <label class="form-label" for="loginEmail">Email Address</label>
-              <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required value="alex.morgan@example.com">
+              <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" autocomplete="email" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="loginPassword">Password</label>
-              <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" required value="demo1234">
+              <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" autocomplete="current-password" required>
             </div>
             <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
               Sign In to Patient Portal
             </button>
-            <div style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--slate-500);">
-              Tip: Pre-filled with demo account. Click Sign In to test!
-            </div>
           </form>
 
           <!-- Register Form -->
           <form id="registerForm" onsubmit="handleRegisterSubmit(event)" style="display: none;">
             <div class="form-group">
               <label class="form-label" for="regName">Full Name</label>
-              <input type="text" id="regName" class="form-control" placeholder="e.g. Jane Smith" required>
+              <input type="text" id="regName" class="form-control" placeholder="e.g. Jane Smith" autocomplete="name" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="regEmail">Email Address</label>
-              <input type="email" id="regEmail" class="form-control" placeholder="jane@example.com" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="regPhone">Phone Number</label>
-              <input type="tel" id="regPhone" class="form-control" placeholder="+1 (555) 000-0000" required>
+              <input type="email" id="regEmail" class="form-control" placeholder="jane@example.com" autocomplete="email" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="regPassword">Create Password</label>
-              <input type="password" id="regPassword" class="form-control" placeholder="At least 6 characters" required minlength="6">
+              <input type="password" id="regPassword" class="form-control" placeholder="At least 6 characters" autocomplete="new-password" required minlength="6">
             </div>
             <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
               Create Patient Account
@@ -353,8 +346,8 @@
           <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--slate-300); padding-bottom: 1rem; margin-bottom: 1.5rem;">
             <div>
               <span class="badge badge-success">Active Session</span>
-              <h2 style="font-size: 1.4rem; color: var(--dark); margin-top: 0.25rem;" id="dashPatientName">Alex Morgan</h2>
-              <p style="font-size: 0.85rem; color: var(--slate-500);" id="dashPatientEmail">alex.morgan@example.com</p>
+              <h2 style="font-size: 1.4rem; color: var(--dark); margin-top: 0.25rem;" id="dashPatientName">Patient</h2>
+              <p style="font-size: 0.85rem; color: var(--slate-500);" id="dashPatientEmail"></p>
             </div>
             <button class="btn btn-sm btn-secondary" onclick="handleLogout()">Sign Out</button>
           </div>
@@ -663,6 +656,7 @@
 
   <!-- Scripts -->
   <script src="data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
 </body>
 </html>

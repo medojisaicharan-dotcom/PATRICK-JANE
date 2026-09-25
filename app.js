@@ -2,12 +2,9 @@
 // MindCare Clinic - Core Application Logic
 // ==========================================================================
 
-// State Management with LocalStorage fallback
-let currentUser = JSON.parse(localStorage.getItem('mindcare_user')) || {
-  name: 'Alex Morgan',
-  email: 'alex.morgan@example.com',
-  phone: '+1 (555) 234-5678'
-};
+// State Management
+let currentUser = null;
+let supabaseClient = null;
 
 let appointments = JSON.parse(localStorage.getItem('mindcare_appointments')) || INITIAL_APPOINTMENTS;
 let currentTab = 'upcoming';
@@ -31,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Update Auth and Dashboard state
   updateAuthUI();
+  initializeSupabaseAuth();
 
   // Render Appointments
   renderAppointments();
@@ -484,6 +482,38 @@ function rescheduleAppointment(id) {
 // ==========================================================================
 // Authentication & Patient Portal
 // ==========================================================================
+const SUPABASE_URL = 'https://aiclsmevqqsamlkjpsic.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BN_M7MJjMFkbq3fZRJ-Iew_kqBOWuwR';
+
+async function initializeSupabaseAuth() {
+  if (!window.supabase) {
+    showToast('Unable to load patient sign-in. Please refresh and try again.');
+    return;
+  }
+
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) {
+    showToast(error.message);
+    return;
+  }
+
+  syncAuthenticatedUser(data.session?.user ?? null);
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    syncAuthenticatedUser(session?.user ?? null);
+  });
+}
+
+function syncAuthenticatedUser(user) {
+  currentUser = user ? {
+    name: user.user_metadata?.full_name || user.email.split('@')[0],
+    email: user.email,
+    phone: user.user_metadata?.phone || ''
+  } : null;
+  updateAuthUI();
+  if (currentUser) autofillBookingPatientInfo();
+}
+
 function switchAuthTab(tab) {
   document.getElementById('tabLoginBtn').classList.toggle('active', tab === 'login');
   document.getElementById('tabRegisterBtn').classList.toggle('active', tab === 'register');
@@ -491,43 +521,58 @@ function switchAuthTab(tab) {
   document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
 }
 
-function handleLoginSubmit(event) {
+async function handleLoginSubmit(event) {
   event.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  
-  // Set current user
-  currentUser = {
-    name: email.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Alex Morgan',
-    email: email,
-    phone: '+1 (555) 234-5678'
-  };
+  if (!supabaseClient) {
+    showToast('Patient sign-in is not available. Please refresh and try again.');
+    return;
+  }
 
-  localStorage.setItem('mindcare_user', JSON.stringify(currentUser));
-  updateAuthUI();
-  showToast(`Welcome back, ${currentUser.name}!`);
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) {
+    showToast(error.message);
+    return;
+  }
+
+  showToast('Signed in successfully. Welcome back!');
 }
 
-function handleRegisterSubmit(event) {
+async function handleRegisterSubmit(event) {
   event.preventDefault();
+  if (!supabaseClient) {
+    showToast('Patient registration is not available. Please refresh and try again.');
+    return;
+  }
+
   const name = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim();
-  const phone = document.getElementById('regPhone').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: name } }
+  });
+  if (error) {
+    showToast(error.message);
+    return;
+  }
 
-  currentUser = {
-    name: name,
-    email: email,
-    phone: phone
-  };
-
-  localStorage.setItem('mindcare_user', JSON.stringify(currentUser));
-  updateAuthUI();
-  showToast(`Account created! Welcome, ${currentUser.name}.`);
+  if (data.session) {
+    showToast(`Account created. Welcome, ${name}.`);
+  } else {
+    showToast('Account created. Check your email to confirm your address.');
+  }
 }
 
-function handleLogout() {
-  currentUser = null;
-  localStorage.removeItem('mindcare_user');
-  updateAuthUI();
+async function handleLogout() {
+  if (!supabaseClient) return;
+  const { error } = await supabaseClient.auth.signOut();
+  if (error) {
+    showToast(error.message);
+    return;
+  }
   showToast('You have signed out.');
 }
 
