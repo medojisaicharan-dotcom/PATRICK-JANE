@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindCare Clinic – Psychiatric & Mental Wellness Appointments</title>
+  <meta name="description" content="MindCare Clinic provides compassionate, confidential psychiatric consultations and easy appointment booking with qualified mental health professionals.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header & Navigation -->
+  <header class="header">
+    <div class="container nav-container">
+      <div class="brand" onclick="navigateTo('home')">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          </svg>
+        </div>
+        <span>MindCare Clinic</span>
+      </div>
+
+      <ul class="nav-menu" id="navMenu">
+        <li><a class="nav-link active" onclick="navigateTo('home')">Home</a></li>
+        <li><a class="nav-link" onclick="navigateTo('psychiatrists')">Psychiatrists</a></li>
+        <li><a class="nav-link" onclick="navigateTo('book')">Book Appointment</a></li>
+        <li><a class="nav-link" onclick="navigateTo('appointments')">My Appointments</a></li>
+        <li><a class="nav-link" onclick="navigateTo('about')">About Us</a></li>
+        <li><a class="nav-link" onclick="navigateTo('contact')">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div id="authNavContainer">
+          <button class="btn btn-secondary btn-sm" onclick="navigateTo('auth')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Login / Signup</span>
+          </button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="navigateTo('book')">
+          Book Now
+        </button>
+        <button class="mobile-toggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation">
+          &#9776;
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== 1. HOME PAGE ==================== -->
+  <main id="page-home" class="page-view active">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="badge badge-primary" style="margin-bottom: 1rem;">
+            Compassionate & Confidential Care
+          </span>
+          <h1 class="hero-title">
+            Your Mental Health <span>Matters.</span>
+          </h1>
+          <p class="hero-subtitle">
+            Connect with board-certified psychiatrists and mental-health professionals. We provide personalized psychiatric evaluations, medication management, and supportive therapy in a warm, confidential environment.
+          </p>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="navigateTo('book')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              <span>Book Appointment</span>
+            </button>
+            <button class="btn btn-secondary" onclick="navigateTo('psychiatrists')">
+              <span>View Psychiatrists</span>
+              &rarr;
+            </button>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <h4>12+</h4>
+              <p>Specialized Doctors</p>
+            </div>
+            <div class="stat-item">
+              <h4>4.9/5</h4>
+              <p>Patient Satisfaction</p>
+            </div>
+            <div class="stat-item">
+              <h4>100%</h4>
+              <p>Confidential Sessions</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="hero-card">
+            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800" alt="Doctor patient consultation">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h4 style="font-weight: 700; color: var(--dark); font-size: 1rem;">Online & In-Person Visits</h4>
+                <p style="font-size: 0.8rem; color: var(--slate-500);">Flexible consultation formats suited to your schedule.</p>
+              </div>
+              <button class="btn btn-sm btn-outline-primary" onclick="navigateTo('book')">Book Slot</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Overview -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Services</span>
+          <h2 class="section-title">Our Psychiatric Services</h2>
+          <p class="section-subtitle">Comprehensive mental health care tailored to your unique emotional and biological needs.</p>
+        </div>
+
+        <div class="services-grid">
+          <div class="service-card">
+            <div class="service-icon">&#128172;</div>
+            <h3>Adult Psychiatry</h3>
+            <p>Diagnostic assessments and medical treatment for depression, mood fluctuations, bipolar disorder, and adult ADHD.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">&#128154;</div>
+            <h3>Anxiety & Panic Care</h3>
+            <p>Evidence-based psychopharmacology combined with cognitive strategies to overcome panic attacks and generalized worry.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">&#128106;</div>
+            <h3>Child & Adolescent Care</h3>
+            <p>Supportive evaluations for children and teens facing behavioral challenges, school anxiety, and emotional distress.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">&#127769;</div>
+            <h3>Sleep & Stress Medicine</h3>
+            <p>Targeted solutions for chronic insomnia, circadian disruption, burnout, and somatic stress symptoms.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Psychiatrists -->
+    <section class="section" style="background: var(--white); border-top: 1px solid var(--slate-300); border-bottom: 1px solid var(--slate-300);">
+      <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Doctors</span>
+            <h2 class="section-title" style="margin-bottom: 0.25rem;">Meet Our Specialists</h2>
+            <p class="section-subtitle">Experienced physicians dedicated to your emotional wellbeing.</p>
+          </div>
+          <button class="btn btn-outline-primary" onclick="navigateTo('psychiatrists')">
+            <span>View All Doctors</span>
+            &rarr;
+          </button>
+        </div>
+
+        <div class="doctor-grid" id="homeDoctorsGrid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="section" style="padding: 3.5rem 0;">
+      <div class="container">
+        <div style="background: linear-gradient(135deg, var(--dark), #1e293b); color: var(--white); border-radius: var(--radius-lg); padding: 3rem 2rem; text-align: center;">
+          <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.75rem;">Take the First Step Toward Peace of Mind</h2>
+          <p style="color: var(--slate-300); max-width: 580px; margin: 0 auto 1.75rem;">Appointments can be booked in under 2 minutes. Choose your doctor, pick an available slot, and start your healing journey.</p>
+          <button class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 1rem;" onclick="navigateTo('book')">
+            Book an Appointment Now
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== 2. PSYCHIATRISTS DIRECTORY ==================== -->
+  <main id="page-psychiatrists" class="page-view" style="display: none;">
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Medical Directory</span>
+          <h1 class="section-title">Our Psychiatrists</h1>
+          <p class="section-subtitle">Browse our licensed specialists, check their qualifications and timings, and book your visit.</p>
+        </div>
+
+        <!-- Filter bar -->
+        <div style="max-width: 500px; margin: 0 auto 2.5rem; display: flex; gap: 0.75rem;">
+          <input 
+            type="text" 
+            id="doctorSearchInput" 
+            class="form-control" 
+            placeholder="Search by doctor name or specialization..."
+            oninput="handleDoctorSearch(this.value)"
+          >
+        </div>
+
+        <div class="doctor-grid" id="allDoctorsGrid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== 3. BOOK APPOINTMENT ==================== -->
+  <main id="page-book" class="page-view" style="display: none;">
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Easy Booking</span>
+          <h1 class="section-title">Book an Appointment</h1>
+          <p class="section-subtitle">Fill in the simple form below to schedule a confidential consultation with your doctor.</p>
+        </div>
+
+        <div class="form-card">
+          <form id="appointmentForm" onsubmit="handleAppointmentSubmit(event)">
+            <!-- Select Psychiatrist -->
+            <div class="form-group">
+              <label class="form-label" for="bookDoctorSelect">Select Psychiatrist *</label>
+              <select id="bookDoctorSelect" class="form-control" required onchange="handleDoctorSelectChange(this.value)">
+                <option value="">-- Choose a Psychiatrist --</option>
+                <!-- Populated via JS -->
+              </select>
+            </div>
+
+            <!-- Consultation Type -->
+            <div class="form-group">
+              <label class="form-label">Consultation Mode *</label>
+              <div style="display: flex; gap: 1rem; margin-top: 0.25rem;">
+                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem;">
+                  <input type="radio" name="consultationType" value="Online Video" checked> Online Video Session
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem;">
+                  <input type="radio" name="consultationType" value="In-Person Clinic"> In-Person Clinic Visit
+                </label>
+              </div>
+            </div>
+
+            <!-- Date and Time -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="bookDate">Appointment Date *</label>
+                <input type="date" id="bookDate" class="form-control" required min="" onchange="handleDateChange(this.value)">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="selectedTimeSlot">Available Slot *</label>
+                <input type="hidden" id="selectedTimeSlot" required>
+                <div class="slots-grid" id="slotsContainer">
+                  <div style="font-size: 0.8rem; color: var(--slate-500); grid-column: 1 / -1;">
+                    Please select a psychiatrist first.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Patient Info -->
+            <div class="form-group">
+              <label class="form-label" for="patientName">Full Name *</label>
+              <input type="text" id="patientName" class="form-control" placeholder="e.g. John Doe" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="patientPhone">Phone Number *</label>
+                <input type="tel" id="patientPhone" class="form-control" placeholder="+1 (555) 000-0000" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="patientEmail">Email Address *</label>
+                <input type="email" id="patientEmail" class="form-control" placeholder="john@example.com" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="appointmentReason">Reason for Visit (Optional)</label>
+              <textarea id="appointmentReason" class="form-control" rows="3" placeholder="Briefly describe what you would like to discuss (e.g., anxiety, sleep issues, medication review)..."></textarea>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+              <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1rem;">
+                Confirm & Book Appointment
+              </button>
+            </div>
+            
+            <p style="text-align: center; font-size: 0.775rem; color: var(--slate-500); margin-top: 0.75rem;">
+              &#128274; Your details are strictly confidential and protected under patient privacy standards.
+            </p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== 4. LOGIN / SIGNUP ==================== -->
+  <main id="page-auth" class="page-view" style="display: none;">
+    <section class="section">
+      <div class="container">
+        
+        <!-- Logged Out View: Tabs for Login / Register -->
+        <div id="authFormsContainer" class="form-card" style="max-width: 480px;">
+          <div class="tabs">
+            <button class="tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Patient Login</button>
+            <button class="tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Register New Patient</button>
+          </div>
+
+          <!-- Login Form -->
+          <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="loginEmail">Email Address</label>
+              <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required value="alex.morgan@example.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" required value="demo1234">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+              Sign In to Patient Portal
+            </button>
+            <div style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--slate-500);">
+              Tip: Pre-filled with demo account. Click Sign In to test!
+            </div>
+          </form>
+
+          <!-- Register Form -->
+          <form id="registerForm" onsubmit="handleRegisterSubmit(event)" style="display: none;">
+            <div class="form-group">
+              <label class="form-label" for="regName">Full Name</label>
+              <input type="text" id="regName" class="form-control" placeholder="e.g. Jane Smith" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="regEmail">Email Address</label>
+              <input type="email" id="regEmail" class="form-control" placeholder="jane@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="regPhone">Phone Number</label>
+              <input type="tel" id="regPhone" class="form-control" placeholder="+1 (555) 000-0000" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="regPassword">Create Password</label>
+              <input type="password" id="regPassword" class="form-control" placeholder="At least 6 characters" required minlength="6">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+              Create Patient Account
+            </button>
+          </form>
+        </div>
+
+        <!-- Logged In Patient Dashboard View -->
+        <div id="patientDashboardContainer" class="form-card" style="display: none; max-width: 600px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--slate-300); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <span class="badge badge-success">Active Session</span>
+              <h2 style="font-size: 1.4rem; color: var(--dark); margin-top: 0.25rem;" id="dashPatientName">Alex Morgan</h2>
+              <p style="font-size: 0.85rem; color: var(--slate-500);" id="dashPatientEmail">alex.morgan@example.com</p>
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="handleLogout()">Sign Out</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: var(--bg-light); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--slate-300);">
+              <h5 style="font-size: 0.8rem; color: var(--slate-500); text-transform: uppercase;">Upcoming Visits</h5>
+              <p style="font-size: 1.5rem; font-weight: 800; color: var(--primary);" id="dashUpcomingCount">1</p>
+            </div>
+            <div style="background: var(--bg-light); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--slate-300);">
+              <h5 style="font-size: 0.8rem; color: var(--slate-500); text-transform: uppercase;">Past Consultations</h5>
+              <p style="font-size: 1.5rem; font-weight: 800; color: var(--slate-700);" id="dashPastCount">1</p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn btn-primary" style="flex: 1;" onclick="navigateTo('appointments')">
+              View My Appointments
+            </button>
+            <button class="btn btn-secondary" style="flex: 1;" onclick="navigateTo('book')">
+              Book New Visit
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== 5. MY APPOINTMENTS ==================== -->
+  <main id="page-appointments" class="page-view" style="display: none;">
+    <section class="section">
+      <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Patient Portal</span>
+            <h1 class="section-title" style="margin-bottom: 0.25rem;">My Appointments</h1>
+            <p class="section-subtitle">Track, reschedule, or cancel your scheduled consultations.</p>
+          </div>
+          <button class="btn btn-primary" onclick="navigateTo('book')">
+            + Book New Appointment
+          </button>
+        </div>
+
+        <!-- Tabs: Upcoming vs Previous -->
+        <div class="tabs">
+          <button class="tab-btn active" id="tabUpcomingBtn" onclick="switchAppointmentsTab('upcoming')">
+            Upcoming Appointments (<span id="upcomingBadgeCount">0</span>)
+          </button>
+          <button class="tab-btn" id="tabPreviousBtn" onclick="switchAppointmentsTab('previous')">
+            Previous Appointments (<span id="previousBadgeCount">0</span>)
+          </button>
+        </div>
+
+        <!-- Appointment List Container -->
+        <div id="appointmentsList" class="appointment-list">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== 6. ABOUT US ==================== -->
+  <main id="page-about" class="page-view" style="display: none;">
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Who We Are</span>
+          <h1 class="section-title">About MindCare Clinic</h1>
+          <p class="section-subtitle">A compassionate center dedicated to comprehensive psychiatric health and emotional healing.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-bottom: 4rem;">
+          <div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--dark); margin-bottom: 1rem;">Our Clinical Philosophy</h3>
+            <p style="color: var(--slate-500); margin-bottom: 1rem; line-height: 1.7;">
+              Founded with the belief that psychiatric care should be accessible, dignified, and devoid of stigma, MindCare Clinic brings together specialized psychiatrists dedicated to whole-person healing.
+            </p>
+            <p style="color: var(--slate-500); line-height: 1.7;">
+              We recognize that mental health involves complex neurobiological, psychological, and lifestyle interactions. Our physicians partner with each patient to develop safe, effective medical and therapeutic roadmaps.
+            </p>
+          </div>
+          <div>
+            <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=800" alt="MindCare clinic interior" style="width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+          </div>
+        </div>
+
+        <!-- Pillars -->
+        <div class="services-grid">
+          <div class="service-card">
+            <h3>Licensed Excellence</h3>
+            <p>Every psychiatrist at MindCare is board-certified with extensive hospital and clinical outpatient training.</p>
+          </div>
+          <div class="service-card">
+            <h3>Strict Confidentiality</h3>
+            <p>Your records, consultations, and personal information are guarded with strict medical privacy standards.</p>
+          </div>
+          <div class="service-card">
+            <h3>Integrated Support</h3>
+            <p>We work collaboratively with your primary care doctors and therapists to ensure unified wellness.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== 7. CONTACT US ==================== -->
+  <main id="page-contact" class="page-view" style="display: none;">
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Get in Touch</span>
+          <h1 class="section-title">Contact MindCare Clinic</h1>
+          <p class="section-subtitle">Have questions before booking? Our patient support team is here to assist you.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; max-width: 960px; margin: 0 auto;">
+          <!-- Contact Info -->
+          <div>
+            <h3 style="font-size: 1.3rem; color: var(--dark); margin-bottom: 1.25rem; font-weight: 800;">Clinic Location & Hours</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 2rem;">
+              <div style="display: flex; gap: 1rem;">
+                <div style="color: var(--primary); font-size: 1.25rem;">&#128205;</div>
+                <div>
+                  <h5 style="font-weight: 700; color: var(--dark);">Main Office Address</h5>
+                  <p style="font-size: 0.875rem; color: var(--slate-500);">450 Lexington Avenue, Suite 300<br>New York, NY 10017</p>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 1rem;">
+                <div style="color: var(--primary); font-size: 1.25rem;">&#128222;</div>
+                <div>
+                  <h5 style="font-weight: 700; color: var(--dark);">Phone Number</h5>
+                  <p style="font-size: 0.875rem; color: var(--slate-500);">+1 (212) 555-0143<br>Toll-Free: +1 (800) 555-CARE</p>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 1rem;">
+                <div style="color: var(--primary); font-size: 1.25rem;">&#9993;</div>
+                <div>
+                  <h5 style="font-weight: 700; color: var(--dark);">Email Inquiries</h5>
+                  <p style="font-size: 0.875rem; color: var(--slate-500);">appointments@mindcareclinic.org<br>support@mindcareclinic.org</p>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 1rem;">
+                <div style="color: var(--primary); font-size: 1.25rem;">&#9200;</div>
+                <div>
+                  <h5 style="font-weight: 700; color: var(--dark);">Operating Timings</h5>
+                  <p style="font-size: 0.875rem; color: var(--slate-500);">Monday &ndash; Friday: 8:30 AM &ndash; 6:00 PM<br>Saturday: 9:00 AM &ndash; 2:00 PM (By Appointment)</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Emergency Note -->
+            <div style="background: var(--danger-bg); border-left: 4px solid var(--danger); padding: 1rem; border-radius: 8px; font-size: 0.85rem; color: #991b1b;">
+              <strong>Emergency Notice:</strong> If you are experiencing thoughts of self-harm or a life-threatening mental health crisis, please dial <strong>988</strong> or visit the nearest emergency room immediately.
+            </div>
+          </div>
+
+          <!-- Contact Form -->
+          <div class="form-card" style="padding: 1.75rem; margin: 0;">
+            <h4 style="font-size: 1.15rem; font-weight: 700; color: var(--dark); margin-bottom: 1rem;">Send Us a Message</h4>
+            <form id="contactForm" onsubmit="handleContactSubmit(event)">
+              <div class="form-group">
+                <label class="form-label" for="contactName">Your Name</label>
+                <input type="text" id="contactName" class="form-control" placeholder="Your full name" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contactEmail">Your Email</label>
+                <input type="email" id="contactEmail" class="form-control" placeholder="name@example.com" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contactMessage">Message</label>
+                <textarea id="contactMessage" class="form-control" rows="4" placeholder="How can our clinic help you?" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== DOCTOR PROFILE MODAL ==================== -->
+  <div id="doctorProfileModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 580px; text-align: left; padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <img id="modalDocPhoto" src="" alt="Doctor photo" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-border);">
+          <div>
+            <div id="modalDocBadgeContainer" style="margin-bottom: 0.25rem;"></div>
+            <h3 id="modalDocName" style="font-size: 1.35rem; font-weight: 800; color: var(--dark); margin: 0.1rem 0;"></h3>
+            <p id="modalDocSpec" style="color: var(--primary); font-size: 0.875rem; font-weight: 600;"></p>
+          </div>
+        </div>
+        <button onclick="closeDoctorProfileModal()" style="font-size: 1.6rem; color: var(--slate-500); line-height: 1; padding: 0.2rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="background: var(--bg-light); border: 1px solid var(--slate-300); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.25rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.4rem;">
+        <div><strong>Qualification:</strong> <span id="modalDocQual"></span></div>
+        <div><strong>Experience:</strong> <span id="modalDocExp"></span></div>
+        <div><strong>Available Timings:</strong> <span id="modalDocTimings"></span></div>
+        <div><strong>Clinic Location:</strong> <span id="modalDocLoc"></span></div>
+        <div><strong>Consultation Fee:</strong> <span id="modalDocFee" style="color: var(--primary); font-weight: 700;"></span></div>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 0.35rem;">Specialist Profile & Approach</h4>
+        <p id="modalDocBio" style="font-size: 0.875rem; color: var(--slate-700); line-height: 1.6;"></p>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn btn-secondary" style="flex: 1;" onclick="closeDoctorProfileModal()">
+          Close
+        </button>
+        <button id="modalBookBtn" class="btn btn-primary" style="flex: 1;">
+          Book Appointment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== APPOINTMENT CONFIRMED MODAL ==================== -->
+  <div id="confirmationModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-icon">&#10004;</div>
+      <h3 class="modal-title">Appointment Confirmed!</h3>
+      <p style="color: var(--slate-500); font-size: 0.9rem;">
+        Your appointment has been successfully scheduled. A confirmation email has been dispatched.
+      </p>
+
+      <div class="modal-details" id="confirmationDetails">
+        <!-- Rendered via JS -->
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn btn-secondary" style="flex: 1;" onclick="closeConfirmationModal(); navigateTo('home');">
+          Back to Home
+        </button>
+        <button class="btn btn-primary" style="flex: 1;" onclick="closeConfirmationModal(); navigateTo('appointments');">
+          View Appointments
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="toast">
+    <span id="toastMessage">Success</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand" style="margin-bottom: 0.75rem;" onclick="navigateTo('home')">
+            <div class="brand-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+              </svg>
+            </div>
+            <span>MindCare Clinic</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--slate-500); line-height: 1.6;">
+            Providing compassionate, confidential, and professional psychiatric consultations for individuals and families.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul class="footer-links">
+            <li><a onclick="navigateTo('home')">Home</a></li>
+            <li><a onclick="navigateTo('psychiatrists')">Psychiatrists</a></li>
+            <li><a onclick="navigateTo('book')">Book Appointment</a></li>
+            <li><a onclick="navigateTo('appointments')">My Appointments</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>About Clinic</h4>
+          <ul class="footer-links">
+            <li><a onclick="navigateTo('about')">About Us</a></li>
+            <li><a onclick="navigateTo('contact')">Clinic Locations</a></li>
+            <li><a onclick="navigateTo('contact')">Contact Team</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Helpline</h4>
+          <p style="font-size: 0.85rem; color: var(--slate-500); margin-bottom: 0.5rem;">Need 24/7 crisis support?</p>
+          <p style="font-size: 1.1rem; font-weight: 800; color: var(--danger);">Dial 988 (USA)</p>
+          <p style="font-size: 0.75rem; color: var(--slate-500); margin-top: 0.25rem;">Free, confidential suicide & crisis lifeline.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        &copy; 2026 MindCare Clinic. All rights reserved. Designed for professional patient appointment booking.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
