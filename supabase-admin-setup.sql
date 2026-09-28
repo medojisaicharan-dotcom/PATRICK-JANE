@@ -11,6 +11,7 @@ create table if not exists public.appointments (
   booking_code text not null unique,
   user_id uuid not null references auth.users(id) on delete cascade,
   patient_name text not null,
+  patient_name_confirmation text,
   patient_email text not null,
   patient_phone text not null,
   doctor_id text not null,
@@ -24,6 +25,9 @@ create table if not exists public.appointments (
     check (status in ('Pending', 'Confirmed', 'Cancelled', 'Completed')),
   created_at timestamptz not null default now()
 );
+
+alter table public.appointments
+  add column if not exists patient_name_confirmation text;
 
 alter table public.admin_users enable row level security;
 alter table public.appointments enable row level security;
@@ -84,6 +88,7 @@ grant insert (
   booking_code,
   user_id,
   patient_name,
+  patient_name_confirmation,
   patient_email,
   patient_phone,
   doctor_id,
@@ -103,3 +108,5 @@ select id
 from auth.users
 where lower(email) = lower('medojisaicharan@gmail.com')
 on conflict (user_id) do nothing;
+
+notify pgrst, 'reload schema';

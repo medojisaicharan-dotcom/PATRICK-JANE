@@ -327,6 +327,7 @@ async function handleAppointmentSubmit(event) {
     booking_code: bookingCode,
     user_id: currentUser.id,
     patient_name: name,
+    patient_name_confirmation: currentUser.nameConfirmation || null,
     patient_email: email,
     patient_phone: phone,
     doctor_id: doctor.id,
@@ -512,6 +513,7 @@ function mapAppointmentRecord(record) {
     date: record.appointment_date,
     time: record.appointment_time,
     patientName: record.patient_name,
+    nameConfirmation: record.patient_name_confirmation,
     patientEmail: record.patient_email,
     patientPhone: record.patient_phone,
     consultationType: record.consultation_type,
@@ -591,6 +593,7 @@ function renderAdminAppointments() {
       <div class="apt-details admin-patient-details">
         <span class="badge badge-secondary">${escapeHTML(apt.bookingCode)}</span>
         <h3>${escapeHTML(apt.patientName)}</h3>
+        <p><strong>Re-entered name:</strong> ${escapeHTML(apt.nameConfirmation || 'Not recorded')}</p>
         <p><a href="mailto:${encodeURIComponent(apt.patientEmail)}">${escapeHTML(apt.patientEmail)}</a></p>
         <p><a href="tel:${encodeURIComponent(apt.patientPhone)}">${escapeHTML(apt.patientPhone)}</a></p>
         <p><strong>Reason:</strong> ${escapeHTML(apt.reason)}</p>
@@ -661,6 +664,7 @@ async function syncAuthenticatedUser(user) {
   currentUser = user ? {
     id: user.id,
     name: user.user_metadata?.full_name || user.email.split('@')[0],
+    nameConfirmation: user.user_metadata?.name_confirmation || '',
     email: user.email,
     phone: user.user_metadata?.phone || ''
   } : null;
@@ -727,12 +731,14 @@ async function handleRegisterSubmit(event) {
   }
 
   const name = document.getElementById('regName').value.trim();
+  const nameConfirmation = document.getElementById('regNameConfirm').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const password = document.getElementById('regPassword').value;
+
   const { data, error } = await supabaseClient.auth.signUp({
     email,
     password,
-    options: { data: { full_name: name } }
+    options: { data: { full_name: name, name_confirmation: nameConfirmation } }
   });
   if (error) {
     showToast(error.message);
